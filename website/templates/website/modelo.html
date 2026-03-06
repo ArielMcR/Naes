@@ -1,44 +1,1455 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ReqManager{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5.3 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <style>
+    /* ─── Paleta de cores ─────────────────────────────────── */
+    :root {
+      --teal-50:  #eef7f7;
+      --teal-100: #cde9e8;
+      --teal-300: #5fb3b0;
+      --teal-500: #2a7f7c;   /* Azul-petróleo principal */
+      --teal-600: #1f6663;
+      --teal-700: #164d4b;
+      --teal-900: #0b2e2d;
+
+      /* Override Bootstrap CSS vars */
+      --bs-primary:          #2a7f7c;
+      --bs-primary-rgb:      42, 127, 124;
+      --bs-primary-bg-subtle:#cde9e8;
+      --bs-primary-border-subtle: #5fb3b0;
+      --bs-link-color:       #2a7f7c;
+      --bs-link-hover-color: #164d4b;
+
+      --bs-success:          #3a9e6f;
+      --bs-success-rgb:      58, 158, 111;
+      --bs-success-bg-subtle:#d2f0e3;
+
+      --bs-info:             #3a7bbf;
+      --bs-info-rgb:         58, 123, 191;
+      --bs-info-bg-subtle:   #d1e4f7;
+
+      --bs-warning:          #e0913a;
+      --bs-warning-rgb:      224, 145, 58;
+      --bs-warning-bg-subtle:#fde9d2;
+
+      --bs-danger:           #c94f4f;
+      --bs-danger-rgb:       201, 79, 79;
+      --bs-danger-bg-subtle: #f8d8d8;
+
+      --bs-body-font-family: 'DM Sans', sans-serif;
+      --bs-body-color:       #1a2e2d;
+      --bs-body-bg:          #f4fafa;
+      --bs-border-color:     #cde9e8;
+    }
+
+    /* ─── Tipografia ──────────────────────────────────────── */
+    body {
+      font-family: var(--bs-body-font-family);
+      background-color: var(--bs-body-bg);
+      color: var(--bs-body-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, h6, .brand-font {
+      font-family: 'Open', sans-serif;
+    }
+
+    /* ─── Navbar ──────────────────────────────────────────── */
+    .navbar {
+      background-color: var(--teal-900) !important;
+      border-bottom: 2px solid var(--teal-600);
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .navbar-brand {
+      font-family: 'Open', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #fff !important;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .navbar-brand span.brand-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--teal-300);
+      margin-bottom: 2px;
+    }
+
+    .navbar .nav-link {
+      color: rgba(255,255,255,0.75) !important;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0.45rem 0.85rem !important;
+      border-radius: 6px;
+      transition: background 0.18s, color 0.18s;
+    }
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link:focus {
+      color: #fff !important;
+      background-color: rgba(95,179,176,0.15);
+    }
+
+    .navbar .nav-link.active {
+      color: #fff !important;
+      background-color: rgba(95,179,176,0.25);
+    }
+
+    .navbar .dropdown-menu {
+      background-color: var(--teal-700);
+      border: 1px solid var(--teal-600);
+      border-radius: 10px;
+      padding: 0.4rem 0.3rem;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .navbar .dropdown-item {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.875rem;
+      border-radius: 6px;
+      padding: 0.45rem 0.85rem;
+      transition: background 0.15s;
+    }
+
+    .navbar .dropdown-item:hover {
+      background-color: rgba(95,179,176,0.2);
+      color: #fff;
+    }
+
+    .navbar .dropdown-divider {
+      border-color: var(--teal-600);
+    }
+
+    .navbar .dropdown-header {
+      color: var(--teal-300);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-left: 0.85rem;
+    }
+
+    /* Botões de auth na navbar */
+    .btn-nav-login {
+      background: transparent;
+      border: 1.5px solid rgba(95,179,176,0.5);
+      color: rgba(255,255,255,0.85) !important;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 0.38rem 1rem;
+      transition: all 0.18s;
+    }
+
+    .btn-nav-login:hover {
+      background: rgba(95,179,176,0.15);
+      border-color: var(--teal-300);
+      color: #fff !important;
+    }
+
+    .btn-nav-register {
+      background: var(--teal-500);
+      border: 1.5px solid var(--teal-500);
+      color: #fff !important;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.38rem 1rem;
+      transition: all 0.18s;
+    }
+
+    .btn-nav-register:hover {
+      background: var(--teal-300);
+      border-color: var(--teal-300);
+      color: var(--teal-900) !important;
+    }
+
+    /* Navbar toggler */
+    .navbar-toggler {
+      border-color: rgba(95,179,176,0.4);
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2895,179,176,0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* ─── Conteúdo principal ──────────────────────────────── */
+    .main-content {
+      flex: 1 0 auto;
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    /* ─── Rodapé ──────────────────────────────────────────── */
+    .footer {
+      flex-shrink: 0;
+      background-color: var(--teal-900);
+      border-top: 2px solid var(--teal-700);
+      color: rgba(255,255,255,0.55);
+      font-size: 0.82rem;
+      padding: 1.25rem 0;
+    }
+
+    .footer a {
+      color: var(--teal-300);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer a:hover {
+      color: #fff;
+    }
+
+    .footer .footer-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    /* ─── Componentes Bootstrap sobrescritos ──────────────── */
+
+    /* Botões */
+    .btn-primary {
+      background-color: var(--teal-500);
+      border-color: var(--teal-500);
+      color: #fff;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: var(--teal-600);
+      border-color: var(--teal-600);
+    }
+    .btn-outline-primary {
+      border-color: var(--teal-500);
+      color: var(--teal-500);
+    }
+    .btn-outline-primary:hover {
+      background-color: var(--teal-500);
+      border-color: var(--teal-500);
+    }
+
+    .btn-success {
+      background-color: var(--bs-success);
+      border-color: var(--bs-success);
+    }
+    .btn-info {
+      background-color: var(--bs-info);
+      border-color: var(--bs-info);
+      color: #fff;
+    }
+    .btn-warning {
+      background-color: var(--bs-warning);
+      border-color: var(--bs-warning);
+      color: #fff;
+    }
+    .btn-danger {
+      background-color: var(--bs-danger);
+      border-color: var(--bs-danger);
+    }
+
+    /* Alertas */
+    .alert-primary {
+      background-color: var(--bs-primary-bg-subtle);
+      border-color: var(--bs-primary-border-subtle);
+      color: var(--teal-700);
+    }
+    .alert-success {
+      background-color: var(--bs-success-bg-subtle);
+      border-color: #a3d9be;
+      color: #1e6644;
+    }
+    .alert-info {
+      background-color: var(--bs-info-bg-subtle);
+      border-color: #a3c4ec;
+      color: #1e4a7a;
+    }
+    .alert-warning {
+      background-color: var(--bs-warning-bg-subtle);
+      border-color: #f3c49a;
+      color: #7a4a14;
+    }
+    .alert-danger {
+      background-color: var(--bs-danger-bg-subtle);
+      border-color: #eeaeae;
+      color: #7a1e1e;
+    }
+
+    /* Badges */
+    .badge.bg-primary { background-color: var(--teal-500) !important; }
+    .badge.bg-success { background-color: var(--bs-success) !important; }
+    .badge.bg-info    { background-color: var(--bs-info) !important; }
+    .badge.bg-warning { background-color: var(--bs-warning) !important; }
+    .badge.bg-danger  { background-color: var(--bs-danger) !important; }
+
+    /* Cards */
+    .card {
+      border-color: var(--bs-border-color);
+      border-radius: 12px;
+    }
+    .card-header {
+      background-color: var(--teal-50);
+      border-bottom-color: var(--bs-border-color);
+    }
+
+    /* Inputs */
+    .form-control:focus, .form-select:focus {
+      border-color: var(--teal-300);
+      box-shadow: 0 0 0 0.2rem rgba(42,127,124,0.18);
+    }
+
+    /* Links */
+    a { color: var(--teal-500); }
+    a:hover { color: var(--teal-700); }
+
+    /* Bordas utilitárias */
+    .border-primary { border-color: var(--teal-500) !important; }
+
+    /* Progress bar */
+    .progress-bar { background-color: var(--teal-500); }
+
+    /* Tabs */
+    .nav-tabs .nav-link.active {
+      color: var(--teal-500);
+      border-bottom-color: var(--teal-500);
+    }
+    .nav-pills .nav-link.active {
+      background-color: var(--teal-500);
+    }
+
+    /* Spinners */
+    .spinner-border.text-primary,
+    .spinner-grow.text-primary { color: var(--teal-500) !important; }
+
+      /* ─── Hero ───────────────────────────────────────────── */
+  .hero-section {
+    position: relative;
+    padding: 5rem 0 4rem;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -120px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,127,124,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,127,124,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    color: var(--teal-600);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: 'Open', sans-serif;
+    font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    color: var(--teal-900);
+    margin-bottom: 1.4rem;
+  }
+
+  .hero-title .highlight {
+    color: var(--teal-500);
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .hero-title .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0;
+    width: 100%; height: 4px;
+    background: var(--teal-200, #9dd4d2);
+    border-radius: 2px;
+    opacity: 0.6;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #4a6665;
+    max-width: 500px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-hero-primary {
+    background: var(--teal-500);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.7rem 1.6rem;
+    border-radius: 10px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-hero-primary:hover {
+    background: var(--teal-600);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42,127,124,0.3);
+  }
+
+  .btn-hero-secondary {
+    background: transparent;
+    border: 1.5px solid var(--teal-200, #9dd4d2);
+    color: var(--teal-600);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.7rem 1.6rem;
+    border-radius: 10px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-hero-secondary:hover {
+    background: var(--teal-50);
+    border-color: var(--teal-300);
+    color: var(--teal-700);
+    transform: translateY(-2px);
+  }
+
+  /* ─── Hero visual mockup ─────────────────────────────── */
+  .hero-mockup {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(42,127,124,0.12), 0 4px 16px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .mockup-bar {
+    background: var(--teal-900);
+    padding: 0.65rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mockup-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .mockup-body {
+    padding: 1.25rem;
+  }
+
+  .mockup-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .mockup-row:hover { background: var(--teal-50); }
+
+  .mockup-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ─── Seção divider ──────────────────────────────────── */
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--teal-100), transparent);
+    margin: 3.5rem 0;
+  }
+
+  /* ─── Labels de seção ────────────────────────────────── */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    color: var(--teal-600);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Open', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.03em;
+    color: var(--teal-900);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    color: #6b8f8e;
+    font-size: 0.95rem;
+    max-width: 480px;
+  }
+
+  /* ─── Números / stats ────────────────────────────────── */
+  .stats-row {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--teal-100);
+  }
+
+  .stat-item .num {
+    font-family: 'Open', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--teal-500);
+    line-height: 1;
+  }
+
+  .stat-item .lbl {
+    font-size: 0.78rem;
+    color: #8aadac;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  /* ─── Feature cards ──────────────────────────────────── */
+  .feat-card {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    height: 100%;
+    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  }
+
+  .feat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(42,127,124,0.11);
+    border-color: var(--teal-300);
+  }
+
+  .feat-icon {
+    width: 48px; height: 48px;
+    border-radius: 13px;
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--teal-500);
+    margin-bottom: 1.1rem;
+  }
+
+  .feat-card h6 {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    color: var(--teal-900);
+    margin-bottom: 0.45rem;
+    font-size: 0.97rem;
+  }
+
+  .feat-card p {
+    font-size: 0.875rem;
+    color: #6b8f8e;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ─── Fluxo ──────────────────────────────────────────── */
+  .flow-card {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 14px;
+    padding: 1.25rem 1.35rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .flow-card:hover {
+    border-color: var(--teal-300);
+    box-shadow: 0 4px 18px rgba(42,127,124,0.09);
+  }
+
+  .flow-num {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    background: var(--teal-500);
+    color: #fff;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Open', sans-serif;
+    font-weight: 800;
+    font-size: 0.88rem;
+  }
+
+  .flow-card h6 {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--teal-900);
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-card p {
+    font-size: 0.83rem;
+    color: #6b8f8e;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* ─── Tipos de requisito ─────────────────────────────── */
+  .tipo-card {
+    border-radius: 16px;
+    padding: 1.75rem;
+    height: 100%;
+    border: 1px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .tipo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .tipo-card.rf  { background: #eef7f7; border-color: #cde9e8; }
+  .tipo-card.rnf { background: #eef4fb; border-color: #c8ddf4; }
+  .tipo-card.rn  { background: #f0f9f4; border-color: #c0e8d2; }
+
+  .tipo-card .tipo-badge {
+    font-family: 'Open', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .tipo-card.rf  .tipo-badge { color: var(--teal-500); }
+  .tipo-card.rnf .tipo-badge { color: var(--bs-info); }
+  .tipo-card.rn  .tipo-badge { color: var(--bs-success); }
+
+  .tipo-card h6 {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--teal-900);
+    margin-bottom: 0.45rem;
+  }
+
+  .tipo-card p {
+    font-size: 0.85rem;
+    color: #5a7a78;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+
+  .tipo-card ul {
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+  }
+
+  .tipo-card ul li {
+    font-size: 0.8rem;
+    color: #6b8f8e;
+    padding: 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .tipo-card ul li::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .tipo-card.rf  ul li::before { background: var(--teal-500); }
+  .tipo-card.rnf ul li::before { background: var(--bs-info); }
+  .tipo-card.rn  ul li::before { background: var(--bs-success); }
+
+  /* ─── CTA final ──────────────────────────────────────── */
+  .cta-section {
+    background: var(--teal-900);
+    border-radius: 22px;
+    padding: 3.5rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(95,179,176,0.18) 0%, transparent 70%);
+  }
+
+  .cta-section::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(95,179,176,0.1) 0%, transparent 70%);
+  }
+
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-section p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.97rem;
+    max-width: 440px;
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+
+  .btn-cta {
+    background: #fff;
+    color: var(--teal-700);
+    border: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-cta:hover {
+    background: var(--teal-50);
+    color: var(--teal-700);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
+  .btn-cta-outline {
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-cta-outline:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+  }
+
+  /* ─── Exportação ─────────────────────────────────────── */
+  .export-card {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .export-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(42,127,124,0.1);
+    border-color: var(--teal-300);
+  }
+
+  .export-card .icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .export-card h6 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--teal-900);
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .export-card p {
+    font-size: 0.82rem;
+    color: #8aadac;
+    margin: 0;
+  }
+
+  /* ─── Animações ──────────────────────────────────────── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeUp 0.55s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.13s; }
+  .delay-3 { animation-delay: 0.21s; }
+  .delay-4 { animation-delay: 0.29s; }
+  .delay-5 { animation-delay: 0.37s; }
+  .delay-6 { animation-delay: 0.45s; }
+
+    /* ─── Utilitários extras ───────────────────────────────── */
+    .text-primary    { color: var(--teal-500) !important; }
+    .bg-primary      { background-color: var(--teal-500) !important; }
+    .bg-primary-subtle { background-color: var(--teal-50) !important; }
+    .border-primary  { border-color: var(--teal-500) !important; }
+  </style>
+
+  {% block extra_head %}{% endblock %}
 </head>
+
 <body>
-    
-    <div id="menu-superior">
-        <ul>
-            <li><a href="{% url "index" %}">Página inicial</a></li>
-            <li><a href="{% url "sobre" %}">Sobre</a></li>
-            <li><a href="{% url "contato" %}">Contato</a></li>
+
+  <!-- ─── NAVBAR ──────────────────────────────────────────────── -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand" href="/">
+        <i class="bi bi-clipboard2-check-fill" style="color: var(--teal-300); font-size:1.1rem;"></i>
+        ReqManager<span class="brand-dot"></span>
+      </a>
+
+      <!-- Toggler mobile -->
+      <button class="navbar-toggler border-0" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navbarMain"
+              aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarMain">
+
+        <!-- Links centralizados -->
+        <ul class="navbar-nav mx-auto gap-1">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">
+              <i class="bi bi-house me-1"></i>Início
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="bi bi-kanban me-1"></i>Projetos
+            </a>
+          </li>
+
+          <!-- Dropdown exemplo -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-file-earmark-text me-1"></i>Requisitos
+            </a>
+            <ul class="dropdown-menu">
+              <li><h6 class="dropdown-header">Tipos</h6></li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-check2-square me-2"></i>Funcionais (RF)
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-gear me-2"></i>Não Funcionais (RNF)
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-book me-2"></i>Regras de Negócio (RN)
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><h6 class="dropdown-header">Ações</h6></li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-plus-circle me-2"></i>Novo Requisito
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-link-45deg me-2"></i>Vincular RN a RF
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="bi bi-box-arrow-up me-1"></i>Exportar
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">  {# TODO: {% url 'sobre' %} #}
+              <i class="bi bi-info-circle me-1"></i>Sobre
+            </a>
+          </li>
         </ul>
+
+        <!-- Auth — usuário NÃO autenticado -->
+        {% if not user.is_authenticated %}
+        <div class="d-flex align-items-center gap-2 ms-2">
+          <a href="#" class="btn btn-nav-login">  {# TODO: {% url 'login' %} #}
+            <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+          </a>
+          <a href="#" class="btn btn-nav-register">  {# TODO: {% url 'cadastro' %} #}
+            <i class="bi bi-person-plus me-1"></i>Cadastrar
+          </a>
+        </div>
+
+        <!-- Auth — usuário AUTENTICADO -->
+        {% else %}
+        <div class="dropdown ms-2">
+          <button class="btn btn-nav-register dropdown-toggle d-flex align-items-center gap-2"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
+            <span>{{ user.get_short_name|default:user.username }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><h6 class="dropdown-header">Minha conta</h6></li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="bi bi-person me-2"></i>Perfil
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="bi bi-gear me-2"></i>Configurações
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="bi bi-bell me-2"></i>Notificações
+              </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item text-danger" href="#">  {# TODO: {% url 'logout' %} #}
+                <i class="bi bi-box-arrow-right me-2"></i>Sair
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
+      </div>
     </div>
+  </nav>
+  <!-- fim navbar -->
 
-    {% block menuLateral %}
-    <div class="menu-lateral">
-        <ul>
-            <li>Bem vindo</li>
-            <li>Cadastro</li>
-            <li>Login</li>
-        </ul>
+
+  <!-- ─── CONTEÚDO PRINCIPAL ──────────────────────────────────── -->
+  <!-- padding-top compensa a navbar fixed-top (altura ~62px) -->
+  <main class="main-content" style="padding-top: 80px;">
+    <div class="container">
+
+      <!-- Mensagens Django (alerts) -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block conteudo %}
+      <!-- Conteúdo padrão de demonstração -->
+        <section class="hero-section">
+            <div class="row align-items-center g-5">
+
+                <div class="col-lg-6 fade-up delay-1">
+                <div class="hero-label">
+                    <i class="bi bi-stars"></i> Sistema de Gestão de Requisitos
+                </div>
+                <h1 class="hero-title">
+                    Documente requisitos<br/>com <span class="highlight">clareza</span><br/>e rastreabilidade
+                </h1>
+                <p class="hero-desc">
+                    Organize Requisitos Funcionais, Não Funcionais e Regras de Negócio
+                    em projetos estruturados. Vincule regras a requisitos e exporte
+                    documentação profissional em segundos.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="#" class="btn-hero-primary">
+                    <i class="bi bi-plus-lg"></i> Novo Projeto
+                    </a>
+                    <a href="{% url 'sobre' %}" class="btn-hero-secondary">
+                    <i class="bi bi-info-circle"></i> Saiba mais
+                    </a>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-item">
+                    <div class="num">RF</div>
+                    <div class="lbl">Funcionais</div>
+                    </div>
+                    <div class="stat-item">
+                    <div class="num">RNF</div>
+                    <div class="lbl">Não Funcionais</div>
+                    </div>
+                    <div class="stat-item">
+                    <div class="num">RN</div>
+                    <div class="lbl">Regras de Negócio</div>
+                    </div>
+                    <div class="stat-item">
+                    <div class="num">3×</div>
+                    <div class="lbl">Formatos exportação</div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Mockup visual -->
+                <div class="col-lg-6 d-none d-lg-block fade-up delay-3">
+                <div class="hero-mockup">
+                    <div class="mockup-bar">
+                    <span class="mockup-dot" style="background:#c94f4f;"></span>
+                    <span class="mockup-dot" style="background:#e0913a;"></span>
+                    <span class="mockup-dot" style="background:#3a9e6f;"></span>
+                    <span style="font-size:0.72rem; color:rgba(255,255,255,0.4); margin-left:0.5rem;">
+                        reqmanager / projeto-ecommerce / modulo-pagamento
+                    </span>
+                    </div>
+                    <div class="mockup-body">
+
+                    <div style="font-size:0.7rem; color:#8aadac; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem;">
+                        Módulo de Pagamento — 6 itens
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#eef7f7; color:var(--teal-600);">RF</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RF001 — Processar pagamento via cartão</span>
+                        <span class="mockup-badge" style="background:#d2f0e3; color:#1e6644;">Aprovado</span>
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#eef7f7; color:var(--teal-600);">RF</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RF002 — Gerar comprovante de pagamento</span>
+                        <span class="mockup-badge" style="background:#fde9d2; color:#7a4a14;">Em análise</span>
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#eef4fb; color:var(--bs-info);">RNF</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RNF001 — Resposta em menos de 2s</span>
+                        <span class="mockup-badge" style="background:#d2f0e3; color:#1e6644;">Aprovado</span>
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#eef4fb; color:var(--bs-info);">RNF</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RNF002 — Criptografia TLS 1.3</span>
+                        <span class="mockup-badge" style="background:#cde9e8; color:var(--teal-700);">Rascunho</span>
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#f0f9f4; color:#1e6644;">RN</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RN001 — Pagamento mínimo de R$ 1,00</span>
+                        <span class="mockup-badge" style="background:#d2f0e3; color:#1e6644;">Aprovado</span>
+                    </div>
+
+                    <div class="mockup-row">
+                        <span class="mockup-badge" style="background:#f0f9f4; color:#1e6644;">RN</span>
+                        <span style="font-size:0.8rem; color:var(--teal-900); flex:1;">RN002 — Reembolso em até 7 dias</span>
+                        <span class="mockup-badge" style="background:#fde9d2; color:#7a4a14;">Em análise</span>
+                    </div>
+
+                    <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--teal-100); display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <span style="font-size:0.72rem; color:#8aadac;">
+                        <i class="bi bi-link-45deg me-1"></i>RF001 → RN001, RN002
+                        </span>
+                        <span style="font-size:0.72rem; color:#8aadac; margin-left:auto;">
+                        <i class="bi bi-box-arrow-up me-1"></i>Exportar PDF · Excel · TXT
+                        </span>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+
+            </div>
+            </section>
+
+         <hr class="section-divider" />
+
+        <!-- ════════════════════════════════════════════════════════
+            TIPOS DE REQUISITO
+        ═════════════════════════════════════════════════════════ -->
+            <section class="mb-5">
+            <div class="row g-4 align-items-end mb-4">
+                <div class="col fade-up delay-1">
+                <span class="section-label"><i class="bi bi-grid-3x3-gap-fill"></i> Tipos</span>
+                <h2 class="section-title">Três pilares da documentação</h2>
+                <p class="section-desc">Cada tipo de requisito tem seu espaço próprio, com campos e categorias adequados.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4 fade-up delay-1">
+                <div class="tipo-card rf">
+                    <div class="tipo-badge">RF</div>
+                    <h6>Requisito Funcional</h6>
+                    <p>Define o que o sistema deve fazer — comportamentos, funcionalidades e interações com o usuário.</p>
+                    <ul>
+                    <li>Código automático (RF001, RF002...)</li>
+                    <li>Prioridade: Alta / Média / Baixa</li>
+                    <li>Status do ciclo de vida</li>
+                    <li>Ator envolvido</li>
+                    <li>Vínculo com Regras de Negócio</li>
+                    </ul>
+                </div>
+                </div>
+
+                <div class="col-md-4 fade-up delay-2">
+                <div class="tipo-card rnf">
+                    <div class="tipo-badge">RNF</div>
+                    <h6>Requisito Não Funcional</h6>
+                    <p>Define como o sistema deve se comportar — qualidade, desempenho, segurança e restrições técnicas.</p>
+                    <ul>
+                    <li>Código automático (RNF001...)</li>
+                    <li>Categoria: Desempenho, Segurança...</li>
+                    <li>Prioridade e status</li>
+                    <li>Usabilidade, Disponibilidade</li>
+                    <li>Escalabilidade</li>
+                    </ul>
+                </div>
+                </div>
+
+                <div class="col-md-4 fade-up delay-3">
+                <div class="tipo-card rn">
+                    <div class="tipo-badge">RN</div>
+                    <h6>Regra de Negócio</h6>
+                    <p>Define as políticas e restrições do domínio do negócio que o sistema deve respeitar.</p>
+                    <ul>
+                    <li>Código automático (RN001...)</li>
+                    <li>Status e ciclo de vida</li>
+                    <li>Vinculável a um ou mais RF</li>
+                    <li>Rastreabilidade bidirecional</li>
+                    <li>Exportação destacada</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+            </section>
+
+        <hr class="section-divider" />
+
+        <!-- ════════════════════════════════════════════════════════
+            FUNCIONALIDADES
+        ═════════════════════════════════════════════════════════ -->
+        <section class="mb-5">
+        <div class="row g-4 mb-4">
+            <div class="col fade-up delay-1">
+            <span class="section-label"><i class="bi bi-lightning-charge-fill"></i> Funcionalidades</span>
+            <h2 class="section-title">Tudo que você precisa</h2>
+            <p class="section-desc">Ferramentas pensadas para o dia a dia de analistas e times de desenvolvimento.</p>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4 fade-up delay-1">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-kanban-fill"></i></div>
+                <h6>Projetos organizados</h6>
+                <p>Crie projetos e estruture os requisitos em arquivos por módulo, sprint ou contexto. Sem limite de projetos.</p>
+            </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up delay-2">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-link-45deg"></i></div>
+                <h6>Vínculo RN ↔ RF</h6>
+                <p>Associe regras de negócio diretamente aos requisitos funcionais. Rastreabilidade completa em um clique.</p>
+            </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up delay-3">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-arrow-repeat"></i></div>
+                <h6>Ciclo de vida completo</h6>
+                <p>Gerencie o status de cada requisito: Rascunho → Em análise → Aprovado → Implementado → Cancelado.</p>
+            </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up delay-4">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-sort-down"></i></div>
+                <h6>Priorização</h6>
+                <p>Classifique requisitos por prioridade Alta, Média ou Baixa para orientar o planejamento do time.</p>
+            </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up delay-5">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-hash"></i></div>
+                <h6>Código automático</h6>
+                <p>Cada requisito recebe um código único gerado automaticamente (RF001, RNF001, RN001) ao ser criado.</p>
+            </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up delay-6">
+            <div class="feat-card">
+                <div class="feat-icon"><i class="bi bi-box-arrow-up"></i></div>
+                <h6>Exportação profissional</h6>
+                <p>Gere documentos em PDF, planilhas Excel ou texto corrido para compartilhar com clientes e stakeholders.</p>
+            </div>
+            </div>
+        </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ════════════════════════════════════════════════════════
+            FLUXO + EXPORTAÇÃO
+        ═════════════════════════════════════════════════════════ -->
+        <section class="mb-5">
+        <div class="row g-5 align-items-start">
+
+            <!-- Fluxo -->
+            <div class="col-lg-7 fade-up delay-1">
+            <span class="section-label"><i class="bi bi-diagram-3-fill"></i> Como funciona</span>
+            <h2 class="section-title">Do projeto ao documento</h2>
+            <p class="section-desc mb-4">Cinco passos simples para documentar requisitos com qualidade.</p>
+
+            <div class="d-flex flex-column gap-3">
+                <div class="flow-card">
+                <div class="flow-num">1</div>
+                <div>
+                    <h6>Crie um Projeto</h6>
+                    <p>Dê um nome, descrição e defina o status inicial. O projeto é o container principal de tudo.</p>
+                </div>
+                </div>
+                <div class="flow-card">
+                <div class="flow-num">2</div>
+                <div>
+                    <h6>Adicione Arquivos</h6>
+                    <p>Organize por módulo ou contexto — ex: "Módulo de Login", "Módulo de Pagamento".</p>
+                </div>
+                </div>
+                <div class="flow-card">
+                <div class="flow-num">3</div>
+                <div>
+                    <h6>Cadastre RF, RNF e RN</h6>
+                    <p>Crie requisitos com código gerado automaticamente, defina prioridade, status e detalhes.</p>
+                </div>
+                </div>
+                <div class="flow-card">
+                <div class="flow-num">4</div>
+                <div>
+                    <h6>Vincule Regras aos RF</h6>
+                    <p>Garanta rastreabilidade associando cada RN ao requisito funcional correspondente.</p>
+                </div>
+                </div>
+                <div class="flow-card">
+                <div class="flow-num">5</div>
+                <div>
+                    <h6>Exporte a documentação</h6>
+                    <p>Gere PDF, Excel ou texto corrido e entregue documentação profissional ao cliente.</p>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Exportação -->
+            <div class="col-lg-5 fade-up delay-3">
+            <span class="section-label"><i class="bi bi-file-earmark-arrow-down-fill"></i> Exportação</span>
+            <h2 class="section-title">Três formatos de saída</h2>
+            <p class="section-desc mb-4">Exporte por projeto inteiro ou por arquivo individualmente.</p>
+
+            <div class="d-flex flex-column gap-3">
+                <div class="export-card d-flex align-items-center gap-3 text-start">
+                <span class="icon" style="font-size:2rem; color:#c94f4f; flex-shrink:0;">
+                    <i class="bi bi-filetype-pdf"></i>
+                </span>
+                <div>
+                    <h6>PDF</h6>
+                    <p>Documento formatado, pronto para apresentar a clientes e stakeholders.</p>
+                </div>
+                </div>
+
+                <div class="export-card d-flex align-items-center gap-3 text-start">
+                <span class="icon" style="font-size:2rem; color:#3a9e6f; flex-shrink:0;">
+                    <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                </span>
+                <div>
+                    <h6>Excel</h6>
+                    <p>Planilha estruturada para análise, filtros e controle por parte do time.</p>
+                </div>
+                </div>
+
+                <div class="export-card d-flex align-items-center gap-3 text-start">
+                <span class="icon" style="font-size:2rem; color:#3a7bbf; flex-shrink:0;">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </span>
+                <div>
+                    <h6>Texto Corrido</h6>
+                    <p>Formato narrativo para inserção em documentos de especificação ou contratos.</p>
+                </div>
+                </div>
+            </div>
+            </div>
+
+        </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ════════════════════════════════════════════════════════
+            CTA FINAL
+        ═════════════════════════════════════════════════════════ -->
+        <section class="mb-2 fade-up delay-1">
+        <div class="cta-section">
+            <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h2>Pronto para organizar seus requisitos?</h2>
+                <p>Crie seu primeiro projeto agora e comece a documentar RF, RNF e Regras de Negócio de forma estruturada e profissional.</p>
+            </div>
+            <div class="col-lg-5 d-flex gap-3 flex-wrap justify-content-lg-end">
+                <a href="#" class="btn-cta">
+                <i class="bi bi-plus-lg"></i> Criar Projeto
+                </a>
+                <a href="{% url 'sobre' %}" class="btn-cta-outline">
+                <i class="bi bi-info-circle"></i> Saiba mais
+                </a>
+            </div>
+            </div>
+        </div>
+        </section>
+      {% endblock conteudo %}
+
     </div>
-    {% endblock menuLateral %}
+  </main>
+  <!-- fim conteúdo -->
 
-    <div class="conteudo">
 
-        {% block conteudo %}
-        <h3>Bem vind ao sistema</h3>
-        <p>uahs dua hsidsa hdiusa hiusa hdsad h</p>
-        {% endblock conteudo %}
-
+  <!-- ─── RODAPÉ ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-4 mb-2 mb-md-0">
+          <span class="footer-brand">
+            <i class="bi bi-clipboard2-check-fill me-1" style="color:var(--teal-300);"></i>
+            ReqManager
+          </span>
+        </div>
+        <div class="col-md-4 text-center mb-2 mb-md-0">
+          <span>Desenvolvido por <a href="#">Ariel Machado Rodrigues</a></span>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <a href="#" class="me-3">Privacidade</a>
+          <a href="{% url "sobre" %}">Sobre</a>  {# TODO: {% url 'sobre' %} #}
+        </div>
+      </div>
     </div>
+  </footer>
+  <!-- fim rodapé -->
 
-    <div class="rodape">
-        <p>Desenvolvido por Rafael Zotteso</p>
-    </div>
-    
+
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <!-- Bootstrap 5.3 JS Bundle (Popper incluído) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  {% block extra_scripts %}{% endblock %}
+
 </body>
 </html>

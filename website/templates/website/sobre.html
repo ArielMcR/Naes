@@ -1,13 +1,529 @@
 {% extends "website/modelo.html" %}
-
 {% load static %}
 
-{% block menuLateral %}
+{% block title %}Sobre — ReqManager{% endblock %}
 
-{% endblock menuLateral %}
+{% block extra_head %}
+<style>
+  /* ─── Hero ──────────────────────────────────────────── */
+  .sobre-hero {
+    position: relative;
+    padding: 4rem 0 3rem;
+    overflow: hidden;
+  }
 
+  .sobre-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -80px;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,127,124,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sobre-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -60px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,127,124,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    color: var(--teal-600);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title {
+    font-family: 'Open', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    color: var(--teal-900);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title span {
+    color: var(--teal-500);
+    position: relative;
+  }
+
+  .hero-title span::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--teal-300);
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #4a6665;
+    max-width: 520px;
+  }
+
+  /* ─── Stats ──────────────────────────────────────────── */
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 14px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(42,127,124,0.1);
+  }
+
+  .stat-number {
+    font-family: 'Open', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--teal-500);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    color: #6b8f8e;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Seção O que é ──────────────────────────────────── */
+  .section-title {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    color: var(--teal-900);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-subtitle {
+    color: #6b8f8e;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  /* ─── Feature cards ──────────────────────────────────── */
+  .feature-card {
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 14px;
+    padding: 1.5rem;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 32px rgba(42,127,124,0.1);
+    border-color: var(--teal-300);
+  }
+
+  .feature-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--teal-500);
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h6 {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--teal-900);
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-card p {
+    font-size: 0.875rem;
+    color: #6b8f8e;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ─── Timeline / Fluxo ───────────────────────────────── */
+  .flow-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    border-radius: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .flow-step:hover {
+    border-color: var(--teal-300);
+    box-shadow: 0 4px 16px rgba(42,127,124,0.08);
+  }
+
+  .flow-number {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--teal-500);
+    color: #fff;
+    font-family: 'Open', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flow-step h6 {
+    font-family: 'Open', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--teal-900);
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-step p {
+    font-size: 0.83rem;
+    color: #6b8f8e;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ─── Tech stack ─────────────────────────────────────── */
+  .tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    border: 1px solid var(--teal-100);
+    color: var(--teal-700);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-radius: 100px;
+    transition: all 0.18s;
+  }
+
+  .tech-badge:hover {
+    background: var(--teal-50);
+    border-color: var(--teal-300);
+    color: var(--teal-600);
+    transform: translateY(-2px);
+  }
+
+  /* ─── Autor card ─────────────────────────────────────── */
+  .autor-card {
+    background: var(--teal-900);
+    border-radius: 20px;
+    padding: 2.5rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .autor-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(95,179,176,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .autor-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--teal-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    border: 2px solid var(--teal-300);
+  }
+
+  .autor-card h5 {
+    font-family: 'Open', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 0.2rem;
+  }
+
+  .autor-card .role {
+    color: var(--teal-300);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+
+  .autor-card p {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+
+  /* ─── Animações de entrada ───────────────────────────── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up:nth-child(1) { animation-delay: 0.05s; }
+  .fade-up:nth-child(2) { animation-delay: 0.12s; }
+  .fade-up:nth-child(3) { animation-delay: 0.19s; }
+  .fade-up:nth-child(4) { animation-delay: 0.26s; }
+  .fade-up:nth-child(5) { animation-delay: 0.33s; }
+  .fade-up:nth-child(6) { animation-delay: 0.40s; }
+
+  /* ─── Divisor decorativo ─────────────────────────────── */
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--teal-100), transparent);
+    margin: 3rem 0;
+  }
+</style>
+{% endblock extra_head %}
 
 
 {% block conteudo %}
-<h3>Página Sobre nós</h3>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="sobre-hero">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-7 fade-up">
+      <div class="hero-label">
+        <i class="bi bi-info-circle-fill"></i> Sobre o projeto
+      </div>
+      <h1 class="hero-title">
+        Documentação de requisitos<br/>feita com <span>precisão</span>
+      </h1>
+      <p class="hero-desc">
+        O <strong>ReqManager</strong> nasceu da necessidade de organizar RF, RNF e Regras de Negócio
+        de forma estruturada, rastreável e fácil de exportar — sem depender de planilhas
+        ou documentos soltos.
+      </p>
+    </div>
+
+    <div class="col-lg-5 fade-up">
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Tipos de requisito</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stat-card">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Projetos & arquivos</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Formatos de exportação</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stat-card">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Open source</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ── O QUE É ───────────────────────────────────────────────── -->
+<section class="mb-5">
+  <div class="row g-4">
+    <div class="col-12 fade-up">
+      <p class="hero-label"><i class="bi bi-lightbulb-fill"></i> Funcionalidades</p>
+      <h2 class="section-title">O que o sistema oferece</h2>
+      <p class="section-subtitle">Tudo que um analista precisa para documentar com qualidade</p>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-kanban-fill"></i></div>
+        <h6>Gestão de Projetos</h6>
+        <p>Crie projetos e organize seus arquivos de requisitos por módulo, sprint ou contexto.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-check2-square"></i></div>
+        <h6>Requisitos Funcionais (RF)</h6>
+        <p>Cadastre RF com código automático, prioridade, status e ator envolvido.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-gear-fill"></i></div>
+        <h6>Requisitos Não Funcionais (RNF)</h6>
+        <p>Classifique RNF por categoria: desempenho, segurança, usabilidade e mais.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-book-fill"></i></div>
+        <h6>Regras de Negócio (RN)</h6>
+        <p>Documente regras e vincule diretamente aos RF relacionados para rastreabilidade total.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-link-45deg"></i></div>
+        <h6>Vínculo RN ↔ RF</h6>
+        <p>Associe uma ou mais regras de negócio a um requisito funcional com poucos cliques.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 fade-up">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-box-arrow-up"></i></div>
+        <h6>Exportação</h6>
+        <p>Gere documentação em PDF, Excel ou texto corrido para compartilhar com o time ou cliente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ── FLUXO DE USO ───────────────────────────────────────────── -->
+<section class="mb-5">
+  <div class="row g-4">
+    <div class="col-12 fade-up">
+      <p class="hero-label"><i class="bi bi-diagram-3-fill"></i> Como usar</p>
+      <h2 class="section-title">Fluxo de trabalho</h2>
+      <p class="section-subtitle">Do projeto ao documento em 5 passos</p>
+    </div>
+
+    <div class="col-lg-6 fade-up">
+      <div class="d-flex flex-column gap-3">
+
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <div>
+            <h6>Crie um Projeto</h6>
+            <p>Dê um nome, descrição e defina o status inicial do projeto.</p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <div>
+            <h6>Adicione Arquivos</h6>
+            <p>Organize por módulo, contexto ou sprint — livre para nomear como quiser.</p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <div>
+            <h6>Cadastre os Requisitos</h6>
+            <p>Crie RF, RNF e RN com código gerado automaticamente e defina prioridade e status.</p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <div>
+            <h6>Vincule RN aos RF</h6>
+            <p>Garanta rastreabilidade ligando cada regra de negócio ao requisito funcional correspondente.</p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-number">5</div>
+          <div>
+            <h6>Exporte a documentação</h6>
+            <p>Gere PDF, Excel ou texto corrido e compartilhe com stakeholders.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Stack tecnológico -->
+    <div class="col-lg-6 fade-up d-flex flex-column justify-content-center">
+      <p class="hero-label"><i class="bi bi-cpu-fill"></i> Stack</p>
+      <h2 class="section-title">Tecnologias utilizadas</h2>
+      <p class="section-subtitle mb-3">Construído com ferramentas sólidas e modernas</p>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="tech-badge"><i class="bi bi-filetype-py"></i> Python 3.11</span>
+        <span class="tech-badge"><i class="bi bi-layers-fill"></i> Django 5</span>
+        <span class="tech-badge"><i class="bi bi-bootstrap-fill"></i> Bootstrap 5.3</span>
+        <span class="tech-badge"><i class="bi bi-braces"></i> jQuery 3.7</span>
+        <span class="tech-badge"><i class="bi bi-database-fill"></i> SQLite / PostgreSQL</span>
+        <span class="tech-badge"><i class="bi bi-filetype-pdf"></i> ReportLab</span>
+        <span class="tech-badge"><i class="bi bi-file-earmark-spreadsheet"></i> OpenPyXL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
 {% endblock conteudo %}
