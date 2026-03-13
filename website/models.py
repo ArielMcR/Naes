@@ -56,7 +56,7 @@ class TimeStampMixin(models.Model):
 
 class Projeto(TimeStampMixin):
     id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    nome      = models.CharField(max_length=150)
+    nome      = models.CharField(max_length=150, help_text="Nome do projeto, você poderá alterar depois!")
     descricao = models.TextField(blank=True)
     status    = models.CharField(max_length=10, choices=StatusProjeto.choices, default=StatusProjeto.ATIVO)
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -76,7 +76,7 @@ class Projeto(TimeStampMixin):
 
 class Arquivo(TimeStampMixin):
     id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    projeto   = models.ForeignKey(Projeto, on_delete=models.CASCADE, related_name="arquivos")
+    projeto   = models.ManyToManyField(Projeto, related_name="arquivos")
     nome      = models.CharField(max_length=150)
     descricao = models.TextField(blank=True)
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
