@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Importar urls dos apps
     path("", include("website.urls")),
+    path("reqmanager/", include("reqManager.urls"))
 
 ]
