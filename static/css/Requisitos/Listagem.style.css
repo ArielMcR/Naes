@@ -1,0 +1,566 @@
+/* ─── ReqManager — Listagem de Requisitos ─────────────────────────────────── */
+
+/* ─── Header da tela ─────────────────────────────────────────────────────── */
+.req-header {
+    background: linear-gradient(135deg, var(--teal-700) 0%, var(--teal-500) 100%);
+    padding: 2rem 0 1.75rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--teal-600);
+}
+
+.req-header h1 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.2rem;
+}
+
+.req-header p {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+}
+
+.breadcrumb-req .breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.breadcrumb-req .breadcrumb-item a:hover {
+    color: #fff;
+}
+
+.breadcrumb-req .breadcrumb-item.active {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+}
+
+.breadcrumb-req .breadcrumb-item+.breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Barra de filtros ───────────────────────────────────────────────────── */
+.filter-bar-req {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-bar-req .form-control,
+.filter-bar-req .form-select {
+    font-size: 0.85rem;
+    border-color: var(--bs-border-color);
+    border-radius: 8px;
+    height: 34px;
+    padding: 0.3rem 0.65rem;
+}
+
+/* ─── Badges de filtro RF / RNF / RN ─────────────────────────────────────── */
+.badge-filter-rf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.85rem;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.badge-filter-rf.rf {
+    background: var(--teal-50);
+    color: var(--teal-600);
+    border-color: var(--teal-100);
+}
+
+.badge-filter-rf.rf:hover,
+.badge-filter-rf.rf.ativo {
+    background: var(--teal-500);
+    color: #fff;
+    border-color: var(--teal-500);
+}
+
+.badge-filter-rf.rnf {
+    background: var(--bs-info-bg-subtle);
+    color: var(--bs-info);
+    border-color: #a3c4ec;
+}
+
+.badge-filter-rf.rnf:hover,
+.badge-filter-rf.rnf.ativo {
+    background: var(--bs-info);
+    color: #fff;
+    border-color: var(--bs-info);
+}
+
+.badge-filter-rf.rn {
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success);
+    border-color: #a3d9be;
+}
+
+.badge-filter-rf.rn:hover,
+.badge-filter-rf.rn.ativo {
+    background: var(--bs-success);
+    color: #fff;
+    border-color: var(--bs-success);
+}
+
+/* ─── Botão exportar ─────────────────────────────────────────────────────── */
+.btn-exportar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    color: var(--bs-body-color);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-exportar:hover {
+    background: var(--teal-50);
+    border-color: var(--teal-300);
+    color: var(--teal-700);
+}
+
+/* dropdown exportar */
+.export-dropdown-menu {
+    min-width: 230px;
+    border-radius: 12px;
+    border: 1px solid var(--bs-border-color);
+    padding: 0.4rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.export-dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--bs-body-color);
+    transition: background 0.12s;
+}
+
+.export-dropdown-menu .dropdown-item:hover {
+    background: var(--teal-50);
+    color: var(--teal-700);
+}
+
+.export-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.export-icon-wrap.pdf {
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger);
+}
+
+.export-icon-wrap.xlsx {
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success);
+}
+
+.export-icon-wrap.txt {
+    background: var(--bs-info-bg-subtle);
+    color: var(--bs-info);
+}
+
+.export-item-info .export-item-label {
+    font-weight: 500;
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
+
+.export-item-info .export-item-sub {
+    font-size: 0.75rem;
+    color: #8aadac;
+    margin-top: 1px;
+}
+
+/* ─── Labels de seção (RF / RNF) ─────────────────────────────────────────── */
+.section-type-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #8aadac;
+    margin-bottom: 0.6rem;
+    margin-top: 1.5rem;
+    padding-left: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.section-type-label:first-of-type {
+    margin-top: 0;
+}
+
+/* ─── Card de requisito ──────────────────────────────────────────────────── */
+.req-card {
+    background: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 0.5rem;
+}
+
+.req-card:hover {
+    border-color: var(--teal-300);
+    box-shadow: 0 3px 14px rgba(42, 127, 124, 0.08);
+}
+
+/* quando tem RN abaixo, achata o bottom radius */
+.req-card.tem-rn {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px dashed var(--bs-border-color);
+    margin-bottom: 0;
+}
+
+.req-tipo-badge {
+    flex-shrink: 0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-top: 1px;
+}
+
+.req-tipo-badge.rf {
+    background: var(--teal-50);
+    color: var(--teal-600);
+}
+
+.req-tipo-badge.rnf {
+    background: var(--bs-info-bg-subtle);
+    color: var(--bs-info);
+}
+
+.req-codigo {
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 0.75rem;
+    background: var(--teal-50);
+    color: var(--teal-700);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--teal-100);
+}
+
+.req-titulo {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--teal-900);
+    margin-bottom: 0;
+}
+
+.req-descricao {
+    font-size: 0.82rem;
+    color: #6b8f8e;
+    line-height: 1.55;
+    margin: 0.3rem 0 0;
+}
+
+/* prioridade dots */
+.prioridade-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: #8aadac;
+}
+
+.prioridade-dot::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.prioridade-dot.alta::before {
+    background: var(--bs-danger);
+}
+
+.prioridade-dot.media::before {
+    background: var(--bs-warning);
+}
+
+.prioridade-dot.baixa::before {
+    background: var(--bs-success);
+}
+
+/* ações hover */
+.req-acoes {
+    display: flex;
+    gap: 0.35rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.req-card:hover .req-acoes {
+    opacity: 1;
+}
+
+.btn-acao {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 6px;
+    background: #fff;
+    color: #6b8f8e;
+    cursor: pointer;
+    transition: all 0.12s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-acao:hover {
+    background: var(--teal-50);
+    border-color: var(--teal-300);
+    color: var(--teal-700);
+}
+
+.btn-acao.danger:hover {
+    background: var(--bs-danger-bg-subtle);
+    border-color: #eeaeae;
+    color: var(--bs-danger);
+}
+
+/* ─── Bloco de RN vinculada ──────────────────────────────────────────────── */
+.rn-vinculada {
+    background: var(--teal-50);
+    border: 1px solid var(--bs-border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 0.75rem 1.15rem 0.75rem 2.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+/* linha vertical de conexão */
+.rn-vinculada::before {
+    content: '';
+    position: absolute;
+    left: 1.4rem;
+    top: 0;
+    bottom: 0.65rem;
+    width: 2px;
+    background: var(--teal-100);
+    border-radius: 0 0 2px 2px;
+}
+
+.rn-vinculada:hover {
+    background: var(--teal-100);
+}
+
+.rn-tipo-badge {
+    flex-shrink: 0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning);
+    border: 1px solid #f3c49a;
+    margin-top: 1px;
+}
+
+.rn-titulo {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--teal-900);
+}
+
+.rn-descricao {
+    font-size: 0.8rem;
+    color: #6b8f8e;
+    line-height: 1.5;
+    margin: 0.25rem 0 0;
+}
+
+.tag-vinculo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.55rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning);
+    border: 1px solid #f3c49a;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+/* ─── Card vazio / adicionar ─────────────────────────────────────────────── */
+.card-novo-req {
+    background: #fff;
+    border: 2px dashed var(--bs-border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: #8aadac;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+}
+
+.card-novo-req:hover {
+    border-color: var(--teal-300);
+    background: var(--teal-50);
+    color: var(--teal-600);
+}
+
+.card-novo-req i {
+    font-size: 1.5rem;
+}
+
+.card-novo-req span {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ─── Modal ──────────────────────────────────────────────────────────────── */
+.modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--bs-border-color);
+}
+
+.modal-header {
+    background: var(--teal-50);
+    border-bottom: 1px solid var(--bs-border-color);
+    border-radius: 16px 16px 0 0;
+    padding: 1rem 1.25rem;
+}
+
+.modal-header .modal-title {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--teal-900);
+}
+
+.modal-body {
+    padding: 1.25rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--bs-border-color);
+    padding: 0.85rem 1.25rem;
+}
+
+.modal-body .form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--teal-700);
+    margin-bottom: 0.3rem;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    font-size: 0.87rem;
+    border-radius: 8px;
+    border-color: var(--bs-border-color);
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: var(--teal-300);
+    box-shadow: 0 0 0 0.2rem rgba(42, 127, 124, 0.15);
+}
+
+/* highlight do campo de vínculo (aparece só no tipo RN) */
+.vinculo-group {
+    background: var(--bs-warning-bg-subtle);
+    border: 1px solid #f3c49a;
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.vinculo-group .form-label {
+    color: #7a4a14;
+}
+
+/* ─── Estatísticas no header ─────────────────────────────────────────────── */
+.header-stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+}
+
+.header-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+}
+
+.header-stat .stat-num {
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.header-stat .stat-lbl {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.header-stat-badge {
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.header-stat-badge.rf {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+
+.header-stat-badge.rnf {
+    background: rgba(58, 123, 191, 0.3);
+    color: #d1e4f7;
+}
+
+.header-stat-badge.rn {
+    background: rgba(224, 145, 58, 0.3);
+    color: #fde9d2;
+}

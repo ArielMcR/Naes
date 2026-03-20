@@ -1,0 +1,123 @@
+{% extends "website/modelo.html" %}
+{% load static %}
+
+{% block title %}Arquivos | {{ projeto_nome }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/Arquivos/Listagem.style.css' %}">
+{% endblock %}
+
+{% block conteudo %}
+
+<!-- Header -->
+<div class="files-header">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div>
+        <nav aria-label="breadcrumb" class="mb-1">
+          <ol class="breadcrumb breadcrumb-files mb-0">
+            <li class="breadcrumb-item"><a href="#">Projetos</a></li>
+            <li class="breadcrumb-item active">{{ projeto_nome }}</li>
+          </ol>
+        </nav>
+        <h1><i class="bi bi-paperclip me-2"></i>Arquivos do Projeto</h1>
+        <p>Gerencie os documentos e anexos relacionados ao projeto</p>
+      </div>
+      <button class="btn btn-light fw-semibold px-4" style="color: var(--teal-700);">
+        <i class="bi bi-upload me-1"></i> Enviar Arquivo
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+
+  <!-- Barra de filtros -->
+  <div class="filter-bar">
+    <i class="bi bi-funnel text-secondary"></i>
+    <input type="text" class="form-control" style="max-width:240px;" placeholder="Buscar arquivo...">
+    <select class="form-select" style="max-width:160px;">
+      <option value="">Todos os tipos</option>
+      <option>PDF</option>
+      <option>Word</option>
+      <option>Excel</option>
+      <option>Imagem</option>
+      <option>Outros</option>
+    </select>
+    <select class="form-select" style="max-width:160px;">
+      <option value="">Ordenar por</option>
+      <option>Mais recentes</option>
+      <option>Mais antigos</option>
+      <option>Nome A-Z</option>
+      <option>Tamanho</option>
+    </select>
+    <span class="ms-auto text-secondary" style="font-size:0.83rem;">
+      <i class="bi bi-paperclip me-1"></i>{{ arquivos|length }} arquivo{{ arquivos|length|pluralize:"s" }}
+    </span>
+  </div>
+
+  <!-- Grid de cards -->
+  <div class="row g-4">
+
+    <!-- Card: Enviar Arquivo -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+      <a href="#" class="text-decoration-none">
+        <div class="file-card card-upload text-center p-4">
+          <div>
+            <div class="upload-icon mx-auto">
+              <i class="bi bi-cloud-upload"></i>
+            </div>
+            <div class="upload-label">Enviar Arquivo</div>
+            <p class="text-secondary mb-0 mt-1" style="font-size:0.82rem;">Adicione documentos ao projeto</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    {% for arquivo in arquivos %}
+    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+     <a href="{% url 'requisitos_arquivo' projeto_id=projeto_id arquivo_id=arquivo.id %}" class="text-decoration-none">
+      <div class="file-card card-file">
+        <div class="card-file-body">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="file-icon-wrap" style="color: {{ arquivo.cor_icone }}; background: {{ arquivo.cor_icone }}18;">
+              <i class="bi {{ arquivo.icone }}"></i>
+            </div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="file-name" title="{{ arquivo.nome }}">{{ arquivo.nome }}</div>
+              <span class="file-ext-badge">{{ arquivo.tipo|upper }}</span>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-link text-secondary p-0" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="font-size:0.85rem;">
+                <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Baixar</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Renomear</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="file-desc">{{ arquivo.descricao }}</p>
+        </div>
+
+        <div class="card-file-footer">
+          <div class="file-meta">
+            <span><i class="bi bi-hdd me-1"></i>{{ arquivo.tamanho }}</span>
+            <span><i class="bi bi-calendar3 me-1"></i>{{ arquivo.enviado_em }}</span>
+          </div>
+          <div class="file-author">
+            <i class="bi bi-person-circle me-1"></i>{{ arquivo.enviado_por }}
+          </div>
+        </div>
+      </div>
+        </a>
+    </div>
+    {% endfor %}
+
+  </div><!-- /row -->
+</div>
+
+{% endblock %}
