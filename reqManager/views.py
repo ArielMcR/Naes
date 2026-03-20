@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
+from .models import Projeto,Arquivo, Requisito, RegraDeNegocio, RequisitoDadosRNF, RequisitoDadosRF
 
 
 MOCK_PROJECTS = [
@@ -61,7 +62,9 @@ MOCK_PROJECTS = [
 
 
 class ListProjectView(TemplateView):
+    # model: Projeto
     template_name = "reqManager/Projetos/ListarProjetos.html"
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
