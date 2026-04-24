@@ -185,7 +185,7 @@
         <h1><i class="bi bi-folder2-open me-2"></i>Meus Projetos</h1>
         <p>Gerencie e acompanhe todos os seus projetos de requisitos</p>
       </div>
-      <a href="#" class="btn btn-light fw-semibold px-4" style="color: var(--teal-700);">
+      <a href="{% url 'projeto_criar' %}" class="btn btn-light fw-semibold px-4" style="color: var(--teal-700);">
         <i class="bi bi-plus-circle me-1"></i> Novo Projeto
       </a>
     </div>
@@ -221,7 +221,7 @@
 
     <!-- Card: Criar Projeto -->
     <div class="col-12 col-sm-6 col-md-4 col-xl-3">
-      <a href="#" class="text-decoration-none">
+      <a href="{% url 'projeto_criar' %}" class="text-decoration-none">
         <div class="project-card card-create text-center p-4">
           <div>
             <div class="create-icon mx-auto">
@@ -236,27 +236,39 @@
 
     {% for projeto in projetos %}
     <div class="col-12 col-sm-6 col-md-4 col-xl-3">
-      <a href="{% url 'arquivos_projeto' projeto.id %}" class="text-decoration-none">
-        <div class="project-card card-project">
-          <div class="card-header-bar" style="background: {{ projeto.cor_barra  }};"></div>
-          <div class="card-body">
-            <div class="d-flex align-items-start justify-content-between mb-1">
-              <div class="project-name">{{ projeto.nome }}</div>
-              <i class="bi bi-three-dots text-secondary" style="font-size:1.1rem;"></i>
-            </div>
-            <p class="project-desc">{{ projeto.descricao }}</p>
-            <div class="project-meta">
-              <i class="bi bi-calendar3"></i> Criado em {{ projeto.criado_em }}
-            </div>
-          </div>
-          <div class="card-footer-bar">
-            <span class="status-badge {{ projeto.status_class }}">{{ projeto.status }}</span>
-            <span class="req-count"><i class="bi bi-file-text"></i> {{ projeto.total_requisitos }} req.</span>
+      <div class="project-card card-project">
+        <div class="card-header-bar" style="background: var(--teal-500);"></div>
+        <div class="card-body" style="cursor:pointer;" onclick="window.location='{% url 'arquivos_projeto' projeto.id %}'">
+          <div class="project-name mb-1">{{ projeto.nome }}</div>
+          <p class="project-desc">{{ projeto.descricao|default:"Sem descrição." }}</p>
+          <div class="project-meta">
+            <i class="bi bi-calendar3"></i> Criado em {{ projeto.criado_em|date:"d/m/Y" }}
           </div>
         </div>
-      </a>
+        <div class="card-footer-bar">
+          <span class="status-badge
+            {% if projeto.status == 'ATIVO' %}bg-primary text-white
+            {% elif projeto.status == 'ENCERRADO' %}bg-danger bg-opacity-10 text-danger
+            {% elif projeto.status == 'ARQUIVADO' %}bg-warning  text-white
+            {% endif %}">
+            {{ projeto.get_status_display }}
+          </span>
+          <div class="d-flex gap-1">
+            <a href="{% url 'projeto_editar' projeto.pk %}"
+              class="btn btn-sm btn-outline-secondary py-0 px-2"
+              title="Editar">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'projeto_excluir' projeto.pk %}"
+              class="btn btn-sm btn-outline-danger py-0 px-2"
+              title="Excluir">
+              <i class="bi bi-trash"></i>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-    {% endfor %}
+{% endfor %}
 
   </div><!-- /row -->
 </div>

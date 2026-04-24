@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from .models import Projeto,Arquivo, Requisito, RegraDeNegocio, RequisitoDadosRNF, RequisitoDadosRF
-
+from .forms.projeto_form import ProjetoForm
+from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 
 MOCK_PROJECTS = [
     {
@@ -62,13 +64,11 @@ MOCK_PROJECTS = [
 
 
 class ListProjectView(TemplateView):
-    # model: Projeto
     template_name = "reqManager/Projetos/ListarProjetos.html"
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["projetos"] = MOCK_PROJECTS
+        context["projetos"] = Projeto.objects.all().order_by("-criado_em")
         return context
 
 MOCK_FILES = [
@@ -246,3 +246,46 @@ class ArquivoRequisitosView(TemplateView):
  
         return context
  
+ 
+class CreateProjectView(CreateView):
+    model = Projeto
+    form_class = ProjetoForm
+    template_name = "reqManager/form/form.html"
+    success_url = reverse_lazy("projetos")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo_pagina"] = "Novo Projeto"
+        ctx["subtitulo"] = "Preencha os dados para criar um novo projeto"
+        return ctx
+
+    def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            form.instance.criado_por = self.request.user
+        else:
+            form.instance.criado_por = User.objects.first()
+        return super().form_valid(form)
+
+class UpdateProjectView(UpdateView):
+    model = Projeto
+    form_class = ProjetoForm
+    template_name = "reqManager/form/form.html"
+    success_url = reverse_lazy("projetos")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo_pagina"] = f"Editar Projeto"
+        ctx["subtitulo"] = f"Editando: {self.object.nome}"
+        return ctx
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+
+class DeleteProjectView(DeleteView):
+    model = Projeto
+    template_name = "reqManager/Projetos/ConfirmarExclusao.html"
+    success_url = reverse_lazy("projetos")
+
+    def form_valid(self, form):
+        return super().form_valid(form)

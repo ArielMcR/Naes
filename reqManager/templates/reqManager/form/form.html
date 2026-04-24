@@ -1,0 +1,49 @@
+{% extends "website/modelo.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo_pagina }} | ReqManager{% endblock %}
+
+{% block extra_head %}
+<style>
+  .form-header {
+    background: linear-gradient(135deg, var(--teal-700) 0%, var(--teal-500) 100%);
+    padding: 2rem 0 1.5rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .form-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.2rem;
+  }
+  .form-header p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .form-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+    padding: 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="form-header">
+  <div class="container">
+    <h1><i class="bi bi-folder-plus me-2"></i>{{ titulo_pagina }}</h1>
+    <p>{{ subtitulo }}</p>
+  </div>
+</div>
+
+<div class="form-card">
+  {% crispy form %}
+</div>
+
+{% endblock %}
