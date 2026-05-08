@@ -15,7 +15,9 @@
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb breadcrumb-req mb-0">
                 <li class="breadcrumb-item"><a href="{% url 'projetos' %}">Projetos</a></li>
-                <li class="breadcrumb-item"><a href="#">{{ projeto_nome }}</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'arquivos_projeto' projeto_id=projeto_id %}">{{ projeto_nome }}</a>
+                </li>
                 <li class="breadcrumb-item active">{{ arquivo_nome }}</li>
             </ol>
         </nav>
@@ -23,7 +25,7 @@
         <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
             <div>
                 <h1><i class="bi bi-file-earmark-text me-2"></i>{{ arquivo_nome }}</h1>
-                <p>{{ arquivo_descricao }}</p>
+                <p>{{ arquivo_descricao|default:"Sem descrição." }}</p>
                 <div class="header-stats">
                     <div class="header-stat">
                         <span class="header-stat-badge rf">RF</span>
@@ -72,52 +74,34 @@
             <span id="contagemVisivel">{{ total_itens }}</span> ite{{ total_itens|pluralize:"m,ns" }}
         </span>
 
-        <!-- Botão Exportar -->
+        <!-- Dropdown Novo -->
         <div class="dropdown">
-            <button class="btn-exportar dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-box-arrow-up"></i> Exportar
+            <button class="btn btn-primary btn-sm px-3 dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-plus-lg me-1"></i>Novo
             </button>
-            <ul class="dropdown-menu export-dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                 <li>
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalExportar"
-                        data-formato="pdf">
-                        <div class="export-icon-wrap pdf"><i class="bi bi-filetype-pdf"></i></div>
-                        <div class="export-item-info">
-                            <div class="export-item-label">Exportar como PDF</div>
-                            <div class="export-item-sub">Documento formatado para impressão</div>
-                        </div>
+                    <a class="dropdown-item"
+                       href="{% url 'requisito_criar' projeto_id=projeto_id arquivo_id=arquivo_id %}?tipo=RF">
+                        <i class="bi bi-check2-square me-2"></i>Requisito Funcional (RF)
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalExportar"
-                        data-formato="xlsx">
-                        <div class="export-icon-wrap xlsx"><i class="bi bi-file-earmark-spreadsheet"></i></div>
-                        <div class="export-item-info">
-                            <div class="export-item-label">Exportar como Excel</div>
-                            <div class="export-item-sub">Planilha com todos os dados</div>
-                        </div>
+                    <a class="dropdown-item"
+                       href="{% url 'requisito_criar' projeto_id=projeto_id arquivo_id=arquivo_id %}?tipo=RNF">
+                        <i class="bi bi-gear me-2"></i>Requisito Não Funcional (RNF)
                     </a>
                 </li>
+                <li><hr class="dropdown-divider"></li>
                 <li>
-                    <hr class="dropdown-divider my-1">
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalExportar"
-                        data-formato="txt">
-                        <div class="export-icon-wrap txt"><i class="bi bi-file-earmark-text"></i></div>
-                        <div class="export-item-info">
-                            <div class="export-item-label">Exportar como texto</div>
-                            <div class="export-item-sub">Texto corrido, pronto para copiar</div>
-                        </div>
+                    <a class="dropdown-item"
+                       href="{% url 'regra_criar' projeto_id=projeto_id arquivo_id=arquivo_id %}">
+                        <i class="bi bi-book me-2"></i>Regra de Negócio (RN)
                     </a>
                 </li>
             </ul>
         </div>
-
-        <!-- Botão Novo -->
-        <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNovoRequisito">
-            <i class="bi bi-plus-lg me-1"></i>Novo
-        </button>
     </div>
     <!-- fim filter-bar -->
 
@@ -135,32 +119,38 @@
         <div class="req-bloco" data-tipo="RF" data-prioridade="{{ req.prioridade|lower }}">
 
             <!-- Card principal RF -->
-            <div class="req-card {% if req.regras %}tem-rn{% endif %}">
+            <div class="req-card {% if req.regras_vinculadas.all %}tem-rn{% endif %}">
                 <span class="req-tipo-badge rf">RF</span>
                 <div class="flex-grow-1 min-w-0">
                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                         <span class="req-titulo">{{ req.titulo }}</span>
                         <span class="req-codigo">{{ req.codigo }}</span>
-                        <span class="prioridade-dot {{ req.prioridade|lower }}">{{ req.prioridade }}</span>
+                        <span class="prioridade-dot {{ req.prioridade|lower }}">{{ req.get_prioridade_display }}</span>
                     </div>
                     <p class="req-descricao">{{ req.descricao }}</p>
                     <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
                         <span class="req-acoes">
-                            <a href="#" class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
-                            <a href="#" class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
+                            <a href="{% url 'requisito_editar' projeto_id=projeto_id arquivo_id=arquivo_id requisito_id=req.id %}"
+                               class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
+                            <a href="{% url 'requisito_excluir' projeto_id=projeto_id arquivo_id=arquivo_id requisito_id=req.id %}"
+                               class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
+                            <a href="{% url 'regra_criar' projeto_id=projeto_id arquivo_id=arquivo_id %}?rf={{ req.id }}"
+                               class="btn-acao"><i class="bi bi-link-45deg"></i> Vincular RN</a>
                         </span>
-                        {% if req.regras %}
+                        {% with vinc=req.regras_vinculadas.all %}
+                        {% if vinc %}
                         <span class="ms-auto" style="font-size:0.75rem; color:#8aadac;">
-                            <i class="bi bi-link-45deg me-1"></i>{{ req.regras|length }}
-                            regra{{ req.regras|length|pluralize }} vinculada{{ req.regras|length|pluralize }}
+                            <i class="bi bi-link-45deg me-1"></i>{{ vinc|length }}
+                            regra{{ vinc|length|pluralize }} vinculada{{ vinc|length|pluralize }}
                         </span>
                         {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
             </div>
 
             <!-- RNs vinculadas a este RF -->
-            {% for rn in req.regras %}
+            {% for rn in req.regras_vinculadas.all %}
             <div class="rn-vinculada" data-tipo="RN" data-prioridade="">
                 <span class="rn-tipo-badge">RN</span>
                 <div class="flex-grow-1 min-w-0">
@@ -172,7 +162,10 @@
                     <p class="rn-descricao">{{ rn.descricao }}</p>
                 </div>
                 <div class="req-acoes" style="opacity:1;">
-                    <a href="#" class="btn-acao"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'regra_editar' projeto_id=projeto_id arquivo_id=arquivo_id regra_id=rn.id %}"
+                       class="btn-acao"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'regra_excluir' projeto_id=projeto_id arquivo_id=arquivo_id regra_id=rn.id %}"
+                       class="btn-acao danger"><i class="bi bi-trash"></i></a>
                 </div>
             </div>
             {% endfor %}
@@ -196,12 +189,14 @@
                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                         <span class="req-titulo">{{ req.titulo }}</span>
                         <span class="req-codigo">{{ req.codigo }}</span>
-                        <span class="prioridade-dot {{ req.prioridade|lower }}">{{ req.prioridade }}</span>
+                        <span class="prioridade-dot {{ req.prioridade|lower }}">{{ req.get_prioridade_display }}</span>
                     </div>
                     <p class="req-descricao">{{ req.descricao }}</p>
                     <div class="req-acoes mt-2">
-                        <a href="#" class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
-                        <a href="#" class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
+                        <a href="{% url 'requisito_editar' projeto_id=projeto_id arquivo_id=arquivo_id requisito_id=req.id %}"
+                           class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
+                        <a href="{% url 'requisito_excluir' projeto_id=projeto_id arquivo_id=arquivo_id requisito_id=req.id %}"
+                           class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
                     </div>
                 </div>
             </div>
@@ -227,8 +222,10 @@
                     </div>
                     <p class="req-descricao">{{ rn.descricao }}</p>
                     <div class="req-acoes mt-2">
-                        <a href="#" class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
-                        <a href="#" class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
+                        <a href="{% url 'regra_editar' projeto_id=projeto_id arquivo_id=arquivo_id regra_id=rn.id %}"
+                           class="btn-acao"><i class="bi bi-pencil"></i> Editar</a>
+                        <a href="{% url 'regra_excluir' projeto_id=projeto_id arquivo_id=arquivo_id regra_id=rn.id %}"
+                           class="btn-acao danger"><i class="bi bi-trash"></i> Excluir</a>
                     </div>
                 </div>
             </div>
@@ -242,9 +239,10 @@
         <div class="text-center py-5 text-secondary">
             <i class="bi bi-inbox" style="font-size:2.5rem; color:var(--teal-100);"></i>
             <p class="mt-2 mb-3" style="font-size:0.9rem;">Nenhum requisito cadastrado neste arquivo ainda.</p>
-            <button class="btn btn-primary btn-sm px-4" data-bs-toggle="modal" data-bs-target="#modalNovoRequisito">
+            <a href="{% url 'requisito_criar' projeto_id=projeto_id arquivo_id=arquivo_id %}?tipo=RF"
+               class="btn btn-primary btn-sm px-4">
                 <i class="bi bi-plus-lg me-1"></i>Adicionar primeiro requisito
-            </button>
+            </a>
         </div>
         {% endif %}
 
@@ -252,204 +250,12 @@
 
 </div><!-- /container -->
 
-
-<!-- ─── Modal: Novo Requisito ────────────────────────────────────────────── -->
-<div class="modal fade" id="modalNovoRequisito" tabindex="-1" aria-labelledby="modalNovoRequisitoLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalNovoRequisitoLabel">
-                    <i class="bi bi-plus-circle me-2 text-primary"></i>Novo item
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formNovoRequisito">
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="form-label">Tipo</label>
-                            <select class="form-select" id="selectTipo" name="tipo">
-                                <option value="RF">RF — Requisito Funcional</option>
-                                <option value="RNF">RNF — Não Funcional</option>
-                                <option value="RN">RN — Regra de Negócio</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label">Código</label>
-                            <input type="text" class="form-control" name="codigo" placeholder="Gerado automaticamente"
-                                readonly style="background:var(--teal-50); color:var(--teal-700);">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Título <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="titulo"
-                            placeholder="Ex: Autenticar usuário via e-mail">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" rows="3"
-                            placeholder="Descreva o comportamento esperado..."></textarea>
-                    </div>
-
-                    <div class="row g-3 mb-3" id="rowPrioridade">
-                        <div class="col-6">
-                            <label class="form-label">Prioridade</label>
-                            <select class="form-select" name="prioridade">
-                                <option value="Alta">Alta</option>
-                                <option value="Media" selected>Média</option>
-                                <option value="Baixa">Baixa</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Grupo de vínculo — só aparece para RN -->
-                    <div class="vinculo-group d-none" id="grupoVinculo">
-                        <label class="form-label">
-                            <i class="bi bi-link-45deg me-1"></i>Vincular ao Requisito Funcional
-                        </label>
-                        <select class="form-select" name="requisito_vinculado">
-                            <option value="">— sem vínculo —</option>
-                            {% for req in requisitos_rf %}
-                            <option value="{{ req.codigo }}">{{ req.codigo }} — {{ req.titulo }}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="form-text" style="color:#7a4a14; font-size:0.75rem; margin-top:0.4rem;">
-                            A regra aparecerá agrupada abaixo do requisito selecionado.
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" form="formNovoRequisito" class="btn btn-primary btn-sm px-4">
-                    <i class="bi bi-check-lg me-1"></i>Salvar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- ─── Modal: Exportar ──────────────────────────────────────────────────── -->
-<div class="modal fade" id="modalExportar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-box-arrow-up me-2 text-primary"></i>
-                    Exportar — <span id="exportFormatoLabel">PDF</span>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-secondary mb-3" style="font-size:0.85rem;" id="exportSubtitulo">
-                    Selecione o que deseja incluir no documento.
-                </p>
-
-                <div class="d-flex flex-column gap-2">
-
-                    <label class="d-flex align-items-center justify-content-between p-3 rounded-3 border"
-                        style="cursor:pointer; font-size:0.87rem;">
-                        <div>
-                            <span class="fw-semibold">Requisitos Funcionais (RF)</span>
-                            <div class="text-secondary" style="font-size:0.78rem;">{{ total_rf }} itens</div>
-                        </div>
-                        <input class="form-check-input ms-3" type="checkbox" checked name="incluir_rf"
-                            style="width:18px;height:18px;">
-                    </label>
-
-                    <label class="d-flex align-items-center justify-content-between p-3 rounded-3 border"
-                        style="cursor:pointer; font-size:0.87rem;">
-                        <div>
-                            <span class="fw-semibold">Requisitos Não Funcionais (RNF)</span>
-                            <div class="text-secondary" style="font-size:0.78rem;">{{ total_rnf }} itens</div>
-                        </div>
-                        <input class="form-check-input ms-3" type="checkbox" checked name="incluir_rnf"
-                            style="width:18px;height:18px;">
-                    </label>
-
-                    <label class="d-flex align-items-center justify-content-between p-3 rounded-3 border"
-                        style="cursor:pointer; font-size:0.87rem;">
-                        <div>
-                            <span class="fw-semibold">Regras de Negócio (RN)</span>
-                            <div class="text-secondary" style="font-size:0.78rem;">{{ total_rn }} itens</div>
-                        </div>
-                        <input class="form-check-input ms-3" type="checkbox" checked name="incluir_rn"
-                            style="width:18px;height:18px;">
-                    </label>
-
-                    <label class="d-flex align-items-center justify-content-between p-3 rounded-3 border d-none"
-                        id="optVinculos" style="cursor:pointer; font-size:0.87rem;">
-                        <div>
-                            <span class="fw-semibold">Exibir vínculos RF → RN</span>
-                            <div class="text-secondary" style="font-size:0.78rem;">Regras agrupadas sob o requisito
-                            </div>
-                        </div>
-                        <input class="form-check-input ms-3" type="checkbox" checked name="incluir_vinculos"
-                            style="width:18px;height:18px;">
-                    </label>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <a href="#" class="btn btn-primary btn-sm px-4" id="btnBaixar">
-                    <i class="bi bi-download me-1"></i><span id="btnBaixarLabel">Baixar PDF</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
 
 
 {% block extra_scripts %}
 <script>
     (function () {
-        /* ── Tipo → mostrar/ocultar grupo de vínculo ──────────────────────── */
-        const selectTipo = document.getElementById('selectTipo');
-        const grupoVinculo = document.getElementById('grupoVinculo');
-        const rowPrioridade = document.getElementById('rowPrioridade');
-
-        selectTipo.addEventListener('change', function () {
-            const isRN = this.value === 'RN';
-            grupoVinculo.classList.toggle('d-none', !isRN);
-            rowPrioridade.classList.toggle('d-none', isRN);
-        });
-
-        /* ── Modal de exportar — adapta labels por formato ───────────────── */
-        const modalExportar = document.getElementById('modalExportar');
-        const exportFormatoLabel = document.getElementById('exportFormatoLabel');
-        const exportSubtitulo = document.getElementById('exportSubtitulo');
-        const btnBaixarLabel = document.getElementById('btnBaixarLabel');
-        const btnBaixar = document.getElementById('btnBaixar');
-        const optVinculos = document.getElementById('optVinculos');
-
-        const formatoConfig = {
-            pdf: { label: 'PDF', sub: 'Selecione o que incluir no documento formatado.', btn: 'Baixar PDF', vinculos: true },
-            xlsx: { label: 'Excel', sub: 'Cada tipo será uma aba separada na planilha.', btn: 'Baixar Excel', vinculos: false },
-            txt: { label: 'Texto', sub: 'Texto corrido, ideal para colar em documentos.', btn: 'Copiar texto', vinculos: true },
-        };
-
-        document.querySelectorAll('[data-formato]').forEach(function (el) {
-            el.addEventListener('click', function () {
-                const fmt = this.dataset.formato;
-                const cfg = formatoConfig[fmt] || formatoConfig.pdf;
-                exportFormatoLabel.textContent = cfg.label;
-                exportSubtitulo.textContent = cfg.sub;
-                btnBaixarLabel.textContent = cfg.btn;
-                optVinculos.classList.toggle('d-none', !cfg.vinculos);
-                /* TODO: apontar btnBaixar.href para a URL de exportação correta */
-                btnBaixar.href = '#export-' + fmt;
-            });
-        });
-
         /* ── Filtro client-side (busca + tipo + prioridade) ──────────────── */
         const inputBusca = document.getElementById('inputBusca');
         const selectPrioridade = document.getElementById('selectPrioridade');

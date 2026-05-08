@@ -77,8 +77,8 @@ class Projeto(TimeStampMixin):
 
 class Arquivo(TimeStampMixin):
     id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    projeto   = models.ManyToManyField(Projeto, related_name="arquivos")
-    nome      = models.CharField(max_length=150)
+    projeto   = models.ForeignKey(Projeto, on_delete=models.CASCADE, related_name="arquivos")
+    nome      = models.CharField(max_length=150, help_text="Ex.: Módulo de Login")
     descricao = models.TextField(blank=True)
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
 
@@ -128,28 +128,15 @@ class Arquivo(TimeStampMixin):
         return f"RN{numero:03d}"
 
 
-class RegraDeNegocio(TimeStampMixin):
-    id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    arquivo   = models.ForeignKey(Arquivo, on_delete=models.CASCADE, related_name="regras")
-    codigo    = models.CharField(max_length=10, editable=False)
-    titulo    = models.CharField(max_length=255)
-    descricao = models.TextField()
-    status    = models.CharField(max_length=15, choices=StatusRequisito.choices, default=StatusRequisito.RASCUNHO)
-    criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.codigo} — {self.titulo}"
-
-    def save(self, *args, **kwargs):
-        if not self.codigo:
-            self.codigo = self.arquivo.proximo_codigo_rn()
-        super().save(*args, **kwargs)
-
-
 class Requisito(TimeStampMixin):
+    TIPOS_PERMITIDOS = [
+        (TipoRequisito.RF.value,  TipoRequisito.RF.label),
+        (TipoRequisito.RNF.value, TipoRequisito.RNF.label),
+    ]
+
     id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     arquivo    = models.ForeignKey(Arquivo, on_delete=models.CASCADE, related_name="requisitos")
-    tipo       = models.CharField(max_length=3, choices=TipoRequisito.choices)
+    tipo       = models.CharField(max_length=3, choices=TIPOS_PERMITIDOS)
     codigo     = models.CharField(max_length=10, editable=False)
     titulo     = models.CharField(max_length=255)
     descricao  = models.TextField()
@@ -157,18 +144,21 @@ class Requisito(TimeStampMixin):
     status     = models.CharField(max_length=15, choices=StatusRequisito.choices, default=StatusRequisito.RASCUNHO)
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
 
+    class Meta:
+        unique_together = [("arquivo", "codigo")]
+        ordering = ["codigo"]
+
     def __str__(self):
         return f"{self.codigo} — {self.titulo}"
+
+    def clean(self):
+        if self.tipo not in (TipoRequisito.RF, TipoRequisito.RNF):
+            raise ValidationError("Requisito só pode ser do tipo RF ou RNF. Use RegraDeNegocio para RN.")
 
     def save(self, *args, **kwargs):
         if not self.codigo:
             self.codigo = self.arquivo.proximo_codigo(self.tipo)
         super().save(*args, **kwargs)
-
-        if self.tipo == TipoRequisito.RF:
-            RequisitoDadosRF.objects.get_or_create(requisito=self)
-        elif self.tipo == TipoRequisito.RNF:
-            RequisitoDadosRNF.objects.get_or_create(requisito=self)
 
     def get_dados_extras(self):
         if self.tipo == TipoRequisito.RF:
@@ -178,11 +168,7 @@ class Requisito(TimeStampMixin):
         return None
 
     def get_regras_vinculadas(self):
-        if self.tipo == TipoRequisito.RF:
-            dados = getattr(self, "dados_rf", None)
-            if dados:
-                return dados.regras.all()
-        return RegraDeNegocio.objects.none()
+        return self.regras_vinculadas.all() if self.is_rf() else RegraDeNegocio.objects.none()
 
     def is_rf(self):
         return self.tipo == TipoRequisito.RF
@@ -190,29 +176,55 @@ class Requisito(TimeStampMixin):
     def is_rnf(self):
         return self.tipo == TipoRequisito.RNF
 
-    def is_rn(self):
-        return self.tipo == TipoRequisito.RN
+
+class RegraDeNegocio(TimeStampMixin):
+    id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    arquivo   = models.ForeignKey(Arquivo, on_delete=models.CASCADE, related_name="regras")
+    requisito_funcional = models.ForeignKey(
+        Requisito,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="regras_vinculadas",
+        help_text="Requisito Funcional ao qual esta regra está vinculada (opcional).",
+    )
+    codigo    = models.CharField(max_length=10, editable=False)
+    titulo    = models.CharField(max_length=255)
+    descricao = models.TextField()
+    status    = models.CharField(max_length=15, choices=StatusRequisito.choices, default=StatusRequisito.RASCUNHO)
+    criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    class Meta:
+        unique_together = [("arquivo", "codigo")]
+        ordering = ["codigo"]
+
+    def __str__(self):
+        return f"{self.codigo} — {self.titulo}"
+
+    def clean(self):
+        if self.requisito_funcional:
+            if self.requisito_funcional.arquivo_id != self.arquivo_id:
+                raise ValidationError("A Regra de Negócio deve estar no mesmo arquivo do Requisito Funcional vinculado.")
+            if self.requisito_funcional.tipo != TipoRequisito.RF:
+                raise ValidationError("Só é possível vincular a um Requisito Funcional (RF).")
+
+    def save(self, *args, **kwargs):
+        if not self.codigo:
+            self.codigo = self.arquivo.proximo_codigo_rn()
+        super().save(*args, **kwargs)
 
 
 class RequisitoDadosRF(models.Model):
     requisito      = models.OneToOneField(Requisito, on_delete=models.CASCADE, related_name="dados_rf")
     ator_envolvido = models.CharField(max_length=150, blank=True)
-    regras         = models.ManyToManyField(RegraDeNegocio, blank=True, related_name="requisitos_funcionais")
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
+
     def __str__(self):
         return f"Dados RF — {self.requisito.codigo}"
 
     def clean(self):
         if self.requisito.tipo != TipoRequisito.RF:
             raise ValidationError("RequisitoDadosRF só pode ser associado a requisitos do tipo RF.")
-
-    def vincular_regra(self, regra: RegraDeNegocio):
-        if regra.arquivo != self.requisito.arquivo:
-            raise ValidationError("A Regra de Negócio deve pertencer ao mesmo arquivo do Requisito.")
-        self.regras.add(regra)
-
-    def desvincular_regra(self, regra: RegraDeNegocio):
-        self.regras.remove(regra)
 
 
 class RequisitoDadosRNF(models.Model):
